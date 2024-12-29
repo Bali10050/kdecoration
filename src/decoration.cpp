@@ -31,10 +31,48 @@ DecorationBridge *findBridge(const QVariantList &args)
 }
 }
 
+DecorationCornerRadius::DecorationCornerRadius()
+{
+}
+
+DecorationCornerRadius::DecorationCornerRadius(qreal radius)
+    : DecorationCornerRadius(radius, radius, radius, radius)
+{
+}
+
+DecorationCornerRadius::DecorationCornerRadius(qreal topLeft, qreal topRight, qreal bottomRight, qreal bottomLeft)
+    : m_topLeft(topLeft)
+    , m_topRight(topRight)
+    , m_bottomRight(bottomRight)
+    , m_bottomLeft(bottomLeft)
+{
+}
+
+qreal DecorationCornerRadius::topLeft() const
+{
+    return m_topLeft;
+}
+
+qreal DecorationCornerRadius::topRight() const
+{
+    return m_topRight;
+}
+
+qreal DecorationCornerRadius::bottomRight() const
+{
+    return m_bottomRight;
+}
+
+qreal DecorationCornerRadius::bottomLeft() const
+{
+    return m_bottomLeft;
+}
+
 class DecorationStateData : public QSharedData
 {
 public:
     QMarginsF borders;
+    DecorationCornerRadius cornerRadius;
 };
 
 DecorationState::DecorationState()
@@ -64,6 +102,16 @@ QMarginsF DecorationState::borders() const
 void DecorationState::setBorders(const QMarginsF &borders)
 {
     d->borders = borders;
+}
+
+DecorationCornerRadius DecorationState::cornerRadius() const
+{
+    return d->cornerRadius;
+}
+
+void DecorationState::setCornerRadius(const DecorationCornerRadius &radius)
+{
+    d->cornerRadius = radius;
 }
 
 Decoration::Private::Private(Decoration *deco, const QVariantList &args)
@@ -279,6 +327,15 @@ void Decoration::setResizeOnlyBorders(const QMarginsF &borders)
     }
 }
 
+void Decoration::setCornerRadius(const DecorationCornerRadius &radius)
+{
+    if (d->next->cornerRadius() != radius) {
+        setState([radius](DecorationState *state) {
+            state->setCornerRadius(radius);
+        });
+    }
+}
+
 void Decoration::setTitleBar(const QRectF &rect)
 {
     if (d->titleBar != rect) {
@@ -376,6 +433,11 @@ qreal Decoration::borderBottom() const
 qreal Decoration::resizeOnlyBorderBottom() const
 {
     return d->resizeOnlyBorders.bottom();
+}
+
+DecorationCornerRadius Decoration::cornerRadius() const
+{
+    return d->current->cornerRadius();
 }
 
 QSizeF Decoration::size() const
@@ -562,6 +624,9 @@ void Decoration::apply(std::shared_ptr<DecorationState> state)
 
     if (previous->borders() != state->borders()) {
         Q_EMIT bordersChanged();
+    }
+    if (previous->cornerRadius() != state->cornerRadius()) {
+        Q_EMIT cornerRadiusChanged();
     }
 
     Q_EMIT currentStateChanged(state);

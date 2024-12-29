@@ -31,6 +31,30 @@ class DecorationSettings;
 class DecorationStateData;
 
 /**
+ * \brief Decoration corner radius.
+ */
+class KDECORATIONS3_EXPORT DecorationCornerRadius
+{
+public:
+    DecorationCornerRadius();
+    explicit DecorationCornerRadius(qreal radius);
+    explicit DecorationCornerRadius(qreal topLeft, qreal topRight, qreal bottomRight, qreal bottomLeft);
+
+    bool operator<=>(const DecorationCornerRadius &other) const = default;
+
+    qreal topLeft() const;
+    qreal topRight() const;
+    qreal bottomRight() const;
+    qreal bottomLeft() const;
+
+private:
+    qreal m_topLeft = 0;
+    qreal m_topRight = 0;
+    qreal m_bottomRight = 0;
+    qreal m_bottomLeft = 0;
+};
+
+/**
  * \brief Decoration state.
  *
  * The DecorationState type represents double bufferred state associated with a decoration.
@@ -48,6 +72,9 @@ public:
 
     QMarginsF borders() const;
     void setBorders(const QMarginsF &margins);
+
+    DecorationCornerRadius cornerRadius() const;
+    void setCornerRadius(const DecorationCornerRadius &radius);
 
 private:
     QSharedDataPointer<DecorationStateData> d;
@@ -131,6 +158,7 @@ public:
     Qt::WindowFrameSection sectionUnderMouse() const;
     QRectF titleBar() const;
     bool isOpaque() const;
+    DecorationCornerRadius cornerRadius() const;
 
     /**
      * DecorationShadow for this Decoration. It is recommended that multiple Decorations share
@@ -279,6 +307,7 @@ Q_SIGNALS:
     void damaged(const QRegion &region);
     void currentStateChanged(std::shared_ptr<DecorationState> state);
     void nextStateChanged(std::shared_ptr<DecorationState> state);
+    void cornerRadiusChanged();
 
 protected:
     /**
@@ -303,6 +332,7 @@ protected:
     void setTitleBar(const QRectF &rect);
     void setOpaque(bool opaque);
     void setShadow(const std::shared_ptr<DecorationShadow> &shadow);
+    void setCornerRadius(const DecorationCornerRadius &radius);
 
     virtual void hoverEnterEvent(QHoverEvent *event);
     virtual void hoverLeaveEvent(QHoverEvent *event);
