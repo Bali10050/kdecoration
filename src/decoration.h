@@ -41,6 +41,7 @@ public:
     BorderRadius();
     explicit BorderRadius(qreal radius);
     explicit BorderRadius(qreal topLeft, qreal topRight, qreal bottomRight, qreal bottomLeft);
+    explicit BorderRadius(qreal topLeft, qreal topRight, qreal bottomRight, qreal bottomLeft, bool floatingTitlebar);
 
     bool operator<=>(const BorderRadius &other) const = default;
 
@@ -48,12 +49,14 @@ public:
     qreal topRight() const;
     qreal bottomRight() const;
     qreal bottomLeft() const;
+    bool floatingTitlebar() const;
 
 private:
     qreal m_topLeft = 0;
     qreal m_topRight = 0;
     qreal m_bottomRight = 0;
     qreal m_bottomLeft = 0;
+    bool m_floatingTitlebar = false;
 };
 
 /**

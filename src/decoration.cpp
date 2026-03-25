@@ -36,15 +36,21 @@ BorderRadius::BorderRadius()
 }
 
 BorderRadius::BorderRadius(qreal radius)
-    : BorderRadius(radius, radius, radius, radius)
+    : BorderRadius(radius, radius, radius, radius, false)
 {
 }
 
 BorderRadius::BorderRadius(qreal topLeft, qreal topRight, qreal bottomRight, qreal bottomLeft)
+: BorderRadius(topLeft, topRight, bottomRight, bottomLeft, false)
+{
+}
+
+BorderRadius::BorderRadius(qreal topLeft, qreal topRight, qreal bottomRight, qreal bottomLeft, bool floatingTitlebar)
     : m_topLeft(topLeft)
     , m_topRight(topRight)
     , m_bottomRight(bottomRight)
     , m_bottomLeft(bottomLeft)
+    , m_floatingTitlebar(floatingTitlebar)
 {
 }
 
@@ -66,6 +72,11 @@ qreal BorderRadius::bottomRight() const
 qreal BorderRadius::bottomLeft() const
 {
     return m_bottomLeft;
+}
+
+bool BorderRadius::floatingTitlebar() const
+{
+    return m_floatingTitlebar;
 }
 
 BorderOutline::BorderOutline()
