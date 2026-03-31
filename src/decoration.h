@@ -56,6 +56,20 @@ private:
     qreal m_bottomLeft = 0;
 };
 
+class KDECORATIONS3_EXPORT FloatingTitlebar
+{
+public:
+    FloatingTitlebar();
+    explicit FloatingTitlebar(bool floating);
+
+    bool operator<=>(const FloatingTitlebar &other) const = default;
+
+    bool floating() const;
+
+private:
+    bool m_floating = false;
+};
+
 /**
  * \brief Decoration border outline.
  */
@@ -193,6 +207,8 @@ class KDECORATIONS3_EXPORT Decoration : public QObject
      * Decoration should set this property to @c true.
      **/
     Q_PROPERTY(bool opaque READ isOpaque NOTIFY opaqueChanged)
+    Q_PROPERTY(bool floatingTitlebar READ floatingTitlebar NOTIFY floatingTitlebarChanged)
+
 public:
     ~Decoration() override;
 
@@ -220,6 +236,8 @@ public:
      * should be rounded. The border radius is specified in the logical pixels.
      */
     BorderRadius borderRadius() const;
+
+    bool floatingTitlebar() const;
 
     /**
      * The outline around the window.
@@ -382,6 +400,7 @@ Q_SIGNALS:
     void currentStateChanged(std::shared_ptr<DecorationState> state);
     void nextStateChanged(std::shared_ptr<DecorationState> state);
     void borderRadiusChanged();
+    void floatingTitlebarChanged();
     void borderOutlineChanged();
 
 protected:
@@ -408,6 +427,7 @@ protected:
     void setOpaque(bool opaque);
     void setShadow(const std::shared_ptr<DecorationShadow> &shadow);
     void setBorderRadius(const BorderRadius &radius);
+    void setFloatingTitlebar(const FloatingTitlebar &floating);
     void setBorderOutline(const BorderOutline &outline);
 
     virtual void hoverEnterEvent(QHoverEvent *event);

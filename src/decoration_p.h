@@ -37,6 +37,8 @@ public:
     void setSectionUnderMouse(Qt::WindowFrameSection section);
     void updateSectionUnderMouse(const QPoint &mousePosition);
 
+    bool floating = false;
+
     QRectF titleBar;
     QRegion blurRegion;
 

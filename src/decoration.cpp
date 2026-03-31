@@ -68,6 +68,22 @@ qreal BorderRadius::bottomLeft() const
     return m_bottomLeft;
 }
 
+
+FloatingTitlebar::FloatingTitlebar()
+: m_floating(false)
+{
+}
+
+FloatingTitlebar::FloatingTitlebar(bool floating)
+: m_floating(floating)
+{
+}
+
+bool FloatingTitlebar::floating() const
+{
+    return m_floating;
+}
+
 BorderOutline::BorderOutline()
 {
 }
@@ -185,6 +201,7 @@ Decoration::Private::Private(Decoration *deco, const QVariantList &args)
     , bridge(findBridge(args))
     , client(std::shared_ptr<DecoratedWindow>(new DecoratedWindow(deco, bridge)))
     , opaque(false)
+    , floating(false)
     , q(deco)
 {
 }
@@ -402,6 +419,14 @@ void Decoration::setBorderRadius(const BorderRadius &radius)
     }
 }
 
+void Decoration::setFloatingTitlebar(const FloatingTitlebar &floating)
+{
+    if (d->floating != floating.floating()) {
+        d->floating = floating.floating();
+        Q_EMIT floatingTitlebarChanged();
+    }
+}
+
 void Decoration::setBorderOutline(const BorderOutline &outline)
 {
     if (d->next->borderOutline() != outline) {
@@ -513,6 +538,11 @@ qreal Decoration::resizeOnlyBorderBottom() const
 BorderRadius Decoration::borderRadius() const
 {
     return d->current->borderRadius();
+}
+
+bool Decoration::floatingTitlebar() const
+{
+    return d->floating;
 }
 
 BorderOutline Decoration::borderOutline() const
