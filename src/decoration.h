@@ -56,20 +56,6 @@ private:
     qreal m_bottomLeft = 0;
 };
 
-class KDECORATIONS3_EXPORT FloatingTitlebar
-{
-public:
-    FloatingTitlebar();
-    explicit FloatingTitlebar(bool floating);
-
-    bool operator<=>(const FloatingTitlebar &other) const = default;
-
-    bool floating() const;
-
-private:
-    bool m_floating = false;
-};
-
 /**
  * \brief Decoration border outline.
  */
@@ -118,6 +104,9 @@ public:
 
     BorderOutline borderOutline() const;
     void setBorderOutline(const BorderOutline &outline);
+
+    bool floatingTitlebar() const;
+    void setFloatingTitlebar(bool floating);
 
 private:
     QSharedDataPointer<DecorationStateData> d;
@@ -427,7 +416,7 @@ protected:
     void setOpaque(bool opaque);
     void setShadow(const std::shared_ptr<DecorationShadow> &shadow);
     void setBorderRadius(const BorderRadius &radius);
-    void setFloatingTitlebar(const FloatingTitlebar &floating);
+    void setFloatingTitlebar(bool floating);
     void setBorderOutline(const BorderOutline &outline);
 
     virtual void hoverEnterEvent(QHoverEvent *event);

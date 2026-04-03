@@ -69,21 +69,6 @@ qreal BorderRadius::bottomLeft() const
 }
 
 
-FloatingTitlebar::FloatingTitlebar()
-: m_floating(false)
-{
-}
-
-FloatingTitlebar::FloatingTitlebar(bool floating)
-: m_floating(floating)
-{
-}
-
-bool FloatingTitlebar::floating() const
-{
-    return m_floating;
-}
-
 BorderOutline::BorderOutline()
 {
 }
@@ -121,6 +106,7 @@ public:
     QMarginsF borders;
     BorderRadius borderRadius;
     BorderOutline borderOutline;
+    bool floatingTitlebar = false;
 };
 
 DecorationState::DecorationState()
@@ -170,6 +156,16 @@ BorderOutline DecorationState::borderOutline() const
 void DecorationState::setBorderOutline(const BorderOutline &outline)
 {
     d->borderOutline = outline;
+}
+
+bool DecorationState::floatingTitlebar() const
+{
+    return d->floatingTitlebar;
+}
+
+void DecorationState::setFloatingTitlebar(bool floating)
+{
+    d->floatingTitlebar = floating;
 }
 
 Positioner::Positioner()
@@ -419,11 +415,17 @@ void Decoration::setBorderRadius(const BorderRadius &radius)
     }
 }
 
-void Decoration::setFloatingTitlebar(const FloatingTitlebar &floating)
+void Decoration::setFloatingTitlebar(bool floating)
 {
-    if (d->floating != floating.floating()) {
-        d->floating = floating.floating();
-        Q_EMIT floatingTitlebarChanged();
+    if (d->floating != floating) {
+        d->floating = floating;
+        if (d->next) {
+            setState([floating](DecorationState *state) {
+                state->setFloatingTitlebar(floating);
+            });
+        } else {
+            Q_EMIT floatingTitlebarChanged();
+        }
     }
 }
 
@@ -740,6 +742,10 @@ void Decoration::apply(std::shared_ptr<DecorationState> state)
     }
     if (previous->borderOutline() != state->borderOutline()) {
         Q_EMIT borderOutlineChanged();
+    }
+    if (previous->floatingTitlebar() != state->floatingTitlebar()) {
+        d->floating = state->floatingTitlebar();
+        Q_EMIT floatingTitlebarChanged();
     }
 
     Q_EMIT currentStateChanged(state);
