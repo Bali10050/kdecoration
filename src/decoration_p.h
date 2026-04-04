@@ -37,7 +37,6 @@ public:
     void setSectionUnderMouse(Qt::WindowFrameSection section);
     void updateSectionUnderMouse(const QPoint &mousePosition);
 
-    bool opaque;
     bool floating = false;
     QRectF titleBar;
     QRegion blurRegion;
@@ -47,6 +46,7 @@ public:
     std::shared_ptr<DecorationSettings> settings;
     DecorationBridge *bridge;
     std::shared_ptr<DecoratedWindow> client;
+    bool opaque;
     QList<DecorationButton *> buttons;
     std::shared_ptr<DecorationShadow> shadow;
     std::shared_ptr<DecorationState> next;
