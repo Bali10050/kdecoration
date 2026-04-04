@@ -68,6 +68,7 @@ qreal BorderRadius::bottomLeft() const
     return m_bottomLeft;
 }
 
+
 BorderOutline::BorderOutline()
 {
 }
@@ -105,6 +106,7 @@ public:
     QMarginsF borders;
     BorderRadius borderRadius;
     BorderOutline borderOutline;
+    bool floatingTitlebar = false;
 };
 
 DecorationState::DecorationState()
@@ -156,6 +158,16 @@ void DecorationState::setBorderOutline(const BorderOutline &outline)
     d->borderOutline = outline;
 }
 
+bool DecorationState::floatingTitlebar() const
+{
+    return d->floatingTitlebar;
+}
+
+void DecorationState::setFloatingTitlebar(bool floating)
+{
+    d->floatingTitlebar = floating;
+}
+
 Positioner::Positioner()
     : d(new PositionerData)
 {
@@ -185,6 +197,7 @@ Decoration::Private::Private(Decoration *deco, const QVariantList &args)
     , bridge(findBridge(args))
     , client(std::shared_ptr<DecoratedWindow>(new DecoratedWindow(deco, bridge)))
     , opaque(false)
+    , floating(false)
     , q(deco)
 {
 }
@@ -402,6 +415,20 @@ void Decoration::setBorderRadius(const BorderRadius &radius)
     }
 }
 
+void Decoration::setFloatingTitlebar(bool floating)
+{
+    if (d->floating != floating) {
+        d->floating = floating;
+        if (d->next) {
+            setState([floating](DecorationState *state) {
+                state->setFloatingTitlebar(floating);
+            });
+        } else {
+            Q_EMIT floatingTitlebarChanged();
+        }
+    }
+}
+
 void Decoration::setBorderOutline(const BorderOutline &outline)
 {
     if (d->next->borderOutline() != outline) {
@@ -513,6 +540,11 @@ qreal Decoration::resizeOnlyBorderBottom() const
 BorderRadius Decoration::borderRadius() const
 {
     return d->current->borderRadius();
+}
+
+bool Decoration::floatingTitlebar() const
+{
+    return d->floating;
 }
 
 BorderOutline Decoration::borderOutline() const
@@ -710,6 +742,10 @@ void Decoration::apply(std::shared_ptr<DecorationState> state)
     }
     if (previous->borderOutline() != state->borderOutline()) {
         Q_EMIT borderOutlineChanged();
+    }
+    if (previous->floatingTitlebar() != state->floatingTitlebar()) {
+        d->floating = state->floatingTitlebar();
+        Q_EMIT floatingTitlebarChanged();
     }
 
     Q_EMIT currentStateChanged(state);
